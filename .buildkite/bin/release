@@ -20,7 +20,7 @@ echo "+++ :docker: Tag ${imageRepo}:${minor}-beta => ${imageRepo}:${minor}"
 docker tag ${imageRepo}:${minor}-beta ${imageRepo}:${minor}
 docker push ${imageRepo}:${minor}
 
-if [ "${latest}" == "true"]; then
+if [ "${latest}" == "true" ]; then
     echo "+++ :docker: Tag ${imageRepo}:${minor}-beta => ${imageRepo}:${major}"
     docker tag ${imageRepo}:${minor}-beta ${imageRepo}:${major}
     docker push ${imageRepo}:${major}
