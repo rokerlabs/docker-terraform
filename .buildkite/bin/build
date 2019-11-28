@@ -16,6 +16,8 @@ fi
 minor=$TERRAFORM_VERSION
 major=${TERRAFORM_VERSION%.*}
 
+echo "+++ :docker: Build ${imageRepo}:${minor}"
+
 docker build . \
     --build-arg TERRAFORM_VERSION \
     -t ${imageRepo}:beta \
@@ -23,10 +25,14 @@ docker build . \
     -t ${imageRepo}:${minor}-beta
 
 if [ "${BUILDKITE_BRANCH}" == "master" ]; then
+    echo "--- :docker: Push ${imageRepo}:${minor}-beta"
     docker push ${imageRepo}:${minor}-beta
 
     if [ "${latest}" == "true"]; then
+        echo "--- :docker: Push ${imageRepo}:${major}-beta"
         docker push ${imageRepo}:${major}-beta
+
+        echo "--- :docker: Push ${imageRepo}:beta"
         docker push ${imageRepo}:beta
     fi
 fi

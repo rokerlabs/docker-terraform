@@ -15,13 +15,17 @@ minor=$TERRAFORM_VERSION
 major=${TERRAFORM_VERSION%.*}
 
 docker pull ${imageRepo}:${minor}-beta
+
+echo "+++ :docker: Tag ${imageRepo}:${minor}-beta => ${imageRepo}:${minor}"
 docker tag ${imageRepo}:${minor}-beta ${imageRepo}:${minor}
 docker push ${imageRepo}:${minor}
 
 if [ "${latest}" == "true"]; then
+    echo "+++ :docker: Tag ${imageRepo}:${minor}-beta => ${imageRepo}:${major}"
     docker tag ${imageRepo}:${minor}-beta ${imageRepo}:${major}
     docker push ${imageRepo}:${major}
 
+    echo "+++ :docker: Tag ${imageRepo}:${minor}-beta => ${imageRepo}:latest"
     docker tag ${imageRepo}:${minor}-beta ${imageRepo}:latest
     docker push ${imageRepo}:latest
 fi
