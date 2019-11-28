@@ -2,7 +2,7 @@ FROM alpine:latest
 
 ARG TERRAFORM_VERSION
 
-RUN apk add --update git bash wget openssl
+RUN apk --update add --no-cache bash openssl
 
 COPY bin/plan /bin/plan
 COPY bin/apply /bin/apply
@@ -15,7 +15,7 @@ ADD https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TE
 RUN sed -i '/.*linux_amd64.zip/!d' terraform_${TERRAFORM_VERSION}_SHA256SUMS
 RUN sha256sum -cs terraform_${TERRAFORM_VERSION}_SHA256SUMS
 RUN unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip -d /bin
-RUN rm -f terraform_${TERRAFORM_VERSION}_linux_amd64.zip
+RUN rm -f terraform_${TERRAFORM_VERSION}_linux_amd64.zip terraform_${TERRAFORM_VERSION}_SHA256SUMS
 RUN terraform version
 
 # Install k8s provider dependencies
