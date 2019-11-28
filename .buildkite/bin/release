@@ -1,0 +1,26 @@
+#!/bin/bash
+
+set -euo pipefail
+
+latest="true"
+
+if [ -z "${TERRAFORM_VERSION}" ]; then
+    export TERRAFORM_VERSION=$(buildkite-agent meta-data get terraform-version)
+else
+    latest="false"
+fi
+
+minor=$TERRAFORM_VERSION
+major=${TERRAFORM_VERSION%.*}
+
+docker pull ${BUILDKITE_ORGANIZATION_SLUG}:${minor}-beta
+docker tag ${BUILDKITE_ORGANIZATION_SLUG}:${minor}-beta ${BUILDKITE_ORGANIZATION_SLUG}:${minor}
+docker push ${BUILDKITE_ORGANIZATION_SLUG}:${minor}
+
+if [ "${latest}" == "true"]; then
+    docker tag ${BUILDKITE_ORGANIZATION_SLUG}:${minor}-beta ${BUILDKITE_ORGANIZATION_SLUG}:${major}
+    docker push ${BUILDKITE_ORGANIZATION_SLUG}:${major}
+
+    docker tag ${BUILDKITE_ORGANIZATION_SLUG}:${minor}-beta ${BUILDKITE_ORGANIZATION_SLUG}:latest
+    docker push ${BUILDKITE_ORGANIZATION_SLUG}:latest
+fi

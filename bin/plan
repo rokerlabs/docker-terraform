@@ -1,0 +1,12 @@
+#!/bin/bash -e
+
+if [ ! -z "$TERRAFORM_AWS_ACCESS_KEY_ID" ] && [ ! -z "$TERRAFORM_AWS_SECRET_ACCESS_KEY" ]; then
+  export AWS_ACCESS_KEY_ID=$TERRAFORM_AWS_ACCESS_KEY_ID
+  export AWS_SECRET_ACCESS_KEY=$TERRAFORM_AWS_SECRET_ACCESS_KEY
+fi
+
+echo '--- :terraform: Init'
+terraform init
+
+echo '+++ :terraform: Plan'
+terraform plan

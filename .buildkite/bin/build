@@ -1,0 +1,31 @@
+#!/bin/bash
+
+set -eo pipefail
+
+latest="true"
+
+if [ -z "${TERRAFORM_VERSION}" ]; then
+    latestReleaseTag=$(curl -s https://api.github.com/repos/hashicorp/terraform/releases/latest | jq -r '.tag_name')
+    export TERRAFORM_VERSION=${latestReleaseTag#v}
+    buildkite-agent meta-data set terraform-version $TERRAFORM_VERSION
+else
+    latest="false"
+fi
+
+minor=$TERRAFORM_VERSION
+major=${TERRAFORM_VERSION%.*}
+
+docker build . \
+    --build-arg TERRAFORM_VERSION \
+    -t ${BUILDKITE_ORGANIZATION_SLUG}:beta \
+    -t ${BUILDKITE_ORGANIZATION_SLUG}:${major}-beta \
+    -t ${BUILDKITE_ORGANIZATION_SLUG}:${minor}-beta
+
+if [ "${BUILDKITE_BRANCH}" == "master" ]; then
+    docker push ${BUILDKITE_ORGANIZATION_SLUG}:${minor}-beta
+
+    if [ "${latest}" == "true"]; then
+        docker push ${BUILDKITE_ORGANIZATION_SLUG}:${major}-beta
+        docker push ${BUILDKITE_ORGANIZATION_SLUG}:beta
+    fi
+fi
