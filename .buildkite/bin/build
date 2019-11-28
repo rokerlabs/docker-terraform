@@ -3,6 +3,7 @@
 set -eo pipefail
 
 latest="true"
+imageRepo="${BUILDKITE_ORGANIZATION_SLUG}/${BUILDKITE_PIPELINE_SLUG}"
 
 if [ -z "${TERRAFORM_VERSION}" ]; then
     latestReleaseTag=$(curl -s https://api.github.com/repos/hashicorp/terraform/releases/latest | jq -r '.tag_name')
@@ -17,15 +18,15 @@ major=${TERRAFORM_VERSION%.*}
 
 docker build . \
     --build-arg TERRAFORM_VERSION \
-    -t ${BUILDKITE_ORGANIZATION_SLUG}:beta \
-    -t ${BUILDKITE_ORGANIZATION_SLUG}:${major}-beta \
-    -t ${BUILDKITE_ORGANIZATION_SLUG}:${minor}-beta
+    -t ${imageRepo}:beta \
+    -t ${imageRepo}:${major}-beta \
+    -t ${imageRepo}:${minor}-beta
 
 if [ "${BUILDKITE_BRANCH}" == "master" ]; then
-    docker push ${BUILDKITE_ORGANIZATION_SLUG}:${minor}-beta
+    docker push ${imageRepo}:${minor}-beta
 
     if [ "${latest}" == "true"]; then
-        docker push ${BUILDKITE_ORGANIZATION_SLUG}:${major}-beta
-        docker push ${BUILDKITE_ORGANIZATION_SLUG}:beta
+        docker push ${imageRepo}:${major}-beta
+        docker push ${imageRepo}:beta
     fi
 fi

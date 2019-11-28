@@ -3,6 +3,7 @@
 set -euo pipefail
 
 latest="true"
+imageRepo="${BUILDKITE_ORGANIZATION_SLUG}/${BUILDKITE_PIPELINE_SLUG}"
 
 if [ -z "${TERRAFORM_VERSION}" ]; then
     export TERRAFORM_VERSION=$(buildkite-agent meta-data get terraform-version)
@@ -13,14 +14,14 @@ fi
 minor=$TERRAFORM_VERSION
 major=${TERRAFORM_VERSION%.*}
 
-docker pull ${BUILDKITE_ORGANIZATION_SLUG}:${minor}-beta
-docker tag ${BUILDKITE_ORGANIZATION_SLUG}:${minor}-beta ${BUILDKITE_ORGANIZATION_SLUG}:${minor}
-docker push ${BUILDKITE_ORGANIZATION_SLUG}:${minor}
+docker pull ${imageRepo}:${minor}-beta
+docker tag ${imageRepo}:${minor}-beta ${imageRepo}:${minor}
+docker push ${imageRepo}:${minor}
 
 if [ "${latest}" == "true"]; then
-    docker tag ${BUILDKITE_ORGANIZATION_SLUG}:${minor}-beta ${BUILDKITE_ORGANIZATION_SLUG}:${major}
-    docker push ${BUILDKITE_ORGANIZATION_SLUG}:${major}
+    docker tag ${imageRepo}:${minor}-beta ${imageRepo}:${major}
+    docker push ${imageRepo}:${major}
 
-    docker tag ${BUILDKITE_ORGANIZATION_SLUG}:${minor}-beta ${BUILDKITE_ORGANIZATION_SLUG}:latest
-    docker push ${BUILDKITE_ORGANIZATION_SLUG}:latest
+    docker tag ${imageRepo}:${minor}-beta ${imageRepo}:latest
+    docker push ${imageRepo}:latest
 fi
