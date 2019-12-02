@@ -5,8 +5,33 @@ if [ ! -z "$TERRAFORM_AWS_ACCESS_KEY_ID" ] && [ ! -z "$TERRAFORM_AWS_SECRET_ACCE
   export AWS_SECRET_ACCESS_KEY=$TERRAFORM_AWS_SECRET_ACCESS_KEY
 fi
 
+environment=""
+stateBucket=""
+
+for arg in "$@"; do
+  case $arg in
+  --env=*)
+    environment=${arg#--env=}
+    ;;
+  --state-bucket=*)
+    stateBucket=${arg#--state-bucket=}
+    ;;
+  esac
+done
+
+if [ ! "${stateBucket}" == "" ]; then
+  sed -i "s/STATE_BUCKET/${stateBucket}/" backend.tf
+fi
+
 echo '--- :terraform: Init'
 terraform init
+
+if [ "${environment}" == "" ]; then
+  terraform workspace select default
+else
+  terraform workspace new $environment
+  terraform workspace select $environment
+fi
 
 echo '+++ :terraform: Plan'
 terraform plan
