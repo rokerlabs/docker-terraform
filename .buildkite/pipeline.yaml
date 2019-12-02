@@ -3,7 +3,7 @@ steps:
     command: .buildkite/bin/build
 
   - wait
-  
+
   - label: ':docker: Tag stable'
     command: .buildkite/bin/release
     branches: master
