@@ -2,7 +2,7 @@ FROM alpine:latest
 
 ARG TERRAFORM_VERSION
 
-RUN apk --update add --no-cache bash openssl
+RUN apk --update add --no-cache git bash openssh
 
 COPY bin/plan /bin/plan
 COPY bin/apply /bin/apply
