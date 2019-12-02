@@ -5,13 +5,13 @@ if [ ! -z "$TERRAFORM_AWS_ACCESS_KEY_ID" ] && [ ! -z "$TERRAFORM_AWS_SECRET_ACCE
   export AWS_SECRET_ACCESS_KEY=$TERRAFORM_AWS_SECRET_ACCESS_KEY
 fi
 
-environment=""
 stateBucket=""
+TF_VAR_environment="default"
 
 for arg in "$@"; do
   case $arg in
   --env=*)
-    environment=${arg#--env=}
+    TF_VAR_environment=${arg#--env=}
     ;;
   --state-bucket=*)
     stateBucket=${arg#--state-bucket=}
@@ -26,11 +26,11 @@ fi
 echo '--- :terraform: Init'
 terraform init
 
-if [ "${environment}" == "" ]; then
+if [ "${TF_VAR_environment}" == "default" ]; then
   terraform workspace select default
 else
-  terraform workspace new $environment
-  terraform workspace select $environment
+  terraform workspace new $TF_VAR_environment
+  terraform workspace select $TF_VAR_environment
 fi
 
 echo '+++ :terraform: Plan'
