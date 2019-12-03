@@ -2,42 +2,4 @@
 
 set -eo pipefail
 
-if [ ! -z "$TERRAFORM_AWS_ACCESS_KEY_ID" ] && [ ! -z "$TERRAFORM_AWS_SECRET_ACCESS_KEY" ]; then
-  export AWS_ACCESS_KEY_ID=$TERRAFORM_AWS_ACCESS_KEY_ID
-  export AWS_SECRET_ACCESS_KEY=$TERRAFORM_AWS_SECRET_ACCESS_KEY
-fi
-
-options=""
-TF_VAR_environment="default"
-stateBucket=""
-
-if [ "${TERRAFORM_DESTROY}" == "true" ]; then
-  options="-destroy"
-fi
-
-for arg in "$@"; do
-  case $arg in
-  --env=*)
-    export TF_VAR_environment=${arg#--env=}
-    ;;
-  --state-bucket=*)
-    stateBucket=${arg#--state-bucket=}
-    ;;
-  esac
-done
-
-if [ ! "${stateBucket}" == "" ]; then
-  sed -i "s/STATE_BUCKET/${stateBucket}/" backend.tf
-fi
-
-if [ "${TF_VAR_environment}" == "default" ]; then
-  sed -i "s/STATE_FILE_LOCATION/terraform/" backend.tf
-else
-  sed -i "s/STATE_FILE_LOCATION/terraform\/${TF_VAR_environment}/" backend.tf
-fi
-
-echo '--- :terraform: Init'
-terraform init
-
-echo '+++ :terraform: Plan'
-terraform plan $options
+tf plan $@
