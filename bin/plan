@@ -7,8 +7,13 @@ if [ ! -z "$TERRAFORM_AWS_ACCESS_KEY_ID" ] && [ ! -z "$TERRAFORM_AWS_SECRET_ACCE
   export AWS_SECRET_ACCESS_KEY=$TERRAFORM_AWS_SECRET_ACCESS_KEY
 fi
 
-stateBucket=""
+options=""
 TF_VAR_environment="default"
+stateBucket=""
+
+if [ "${TERRAFORM_DESTROY}" == "true" ]; then
+  options="-destroy"
+fi
 
 for arg in "$@"; do
   case $arg in
@@ -35,4 +40,4 @@ echo '--- :terraform: Init'
 terraform init
 
 echo '+++ :terraform: Plan'
-terraform plan
+terraform plan $options
