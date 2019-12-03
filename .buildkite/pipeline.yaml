@@ -2,7 +2,7 @@ steps:
   - label: ':docker: Build image'
     command: .buildkite/bin/build
 
-  - wait
+  - block
 
   - label: ':docker: Tag stable'
     command: .buildkite/bin/release
