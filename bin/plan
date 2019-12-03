@@ -7,7 +7,9 @@ if [ ! -z "$TERRAFORM_AWS_ACCESS_KEY_ID" ] && [ ! -z "$TERRAFORM_AWS_SECRET_ACCE
   export AWS_SECRET_ACCESS_KEY=$TERRAFORM_AWS_SECRET_ACCESS_KEY
 fi
 
-tfinit
+bash bin/tfinit
+
+echo TF_VAR_environment=$TF_VAR_environment
 
 echo '+++ :terraform: Plan'
 terraform plan
