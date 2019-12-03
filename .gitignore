@@ -3,7 +3,6 @@
 
 # Terraform
 .terraform/
-terraform.tfstate.d/
 terraform.tfstate
 
 # InSpec
