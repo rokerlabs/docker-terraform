@@ -54,5 +54,5 @@ fi
 echo '--- :terraform: Init'
 terraform init
 
-echo '+++ :terraform: ${action^}'
+echo "+++ :terraform: ${action^}"
 terraform $action $options
