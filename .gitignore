@@ -1,2 +1,10 @@
+# IDE
+.DS_Store
+
+# Terraform
 .terraform/
+terraform.tfstate.d/
+terraform.tfstate
+
+# InSpec
 inspec.lock

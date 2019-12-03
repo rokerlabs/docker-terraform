@@ -25,15 +25,14 @@ if [ ! "${stateBucket}" == "" ]; then
   sed -i "s/STATE_BUCKET/${stateBucket}/" backend.tf
 fi
 
+if [ "${TF_VAR_environment}" == "default" ]; then
+  sed -i "s/STATE_FILE_LOCATION/terraform/" backend.tf
+else
+  sed -i "s/STATE_FILE_LOCATION/terraform\/${TF_VAR_environment}/" backend.tf
+fi
+
 echo '--- :terraform: Init'
 terraform init
-
-if [ "${TF_VAR_environment}" == "default" ]; then
-  terraform workspace select default
-else
-  terraform workspace new $TF_VAR_environment
-  terraform workspace select $TF_VAR_environment
-fi
 
 echo '+++ :terraform: Apply'
 terraform apply -auto-approve
