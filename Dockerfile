@@ -2,12 +2,13 @@ FROM alpine:latest
 
 ARG TERRAFORM_VERSION
 
-RUN apk --update add --no-cache bash openssl
+RUN apk --update add --no-cache git openssh bash
+RUN git --version
+RUN ssh -V
+RUN bash --version
 
-COPY bin/plan /bin/plan
-COPY bin/apply /bin/apply
-
-RUN chmod +x /bin/plan /bin/apply
+COPY ./bin /usr/local/bin
+RUN chmod +x /usr/local/bin/*
 
 ADD https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip ./
 ADD https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_SHA256SUMS ./

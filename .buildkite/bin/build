@@ -8,7 +8,10 @@ imageRepo="${BUILDKITE_ORGANIZATION_SLUG}/${BUILDKITE_PIPELINE_SLUG}"
 if [ -z "${TERRAFORM_VERSION}" ]; then
     latestReleaseTag=$(curl -s https://api.github.com/repos/hashicorp/terraform/releases/latest | jq -r '.tag_name')
     export TERRAFORM_VERSION=${latestReleaseTag#v}
-    buildkite-agent meta-data set terraform-version $TERRAFORM_VERSION
+
+    if [ "${BUILDKITE}" == "true" ]; then
+        buildkite-agent meta-data set terraform-version $TERRAFORM_VERSION
+    fi
 else
     latest="false"
 fi
