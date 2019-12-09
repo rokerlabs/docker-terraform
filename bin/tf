@@ -37,6 +37,10 @@ for arg in "$@"; do
     ;;
   --state-bucket=*)
     stateBucket=${arg#--state-bucket=}
+
+    if [ ! -z "$AWS_ACCOUNT_ID" ]; then
+      stateBucket="${stateBucket}-${AWS_ACCOUNT_ID}"
+    fi
     ;;
   esac
 done
