@@ -41,6 +41,8 @@ for arg in "$@"; do
     if [ ! -z "$AWS_ACCOUNT_ID" ]; then
       stateBucket="${stateBucket}-${AWS_ACCOUNT_ID}"
     fi
+
+    export TF_VAR_state_bucket=$stateBucket
     ;;
   esac
 done
