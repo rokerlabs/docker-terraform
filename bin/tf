@@ -44,6 +44,12 @@ for arg in "$@"; do
 
     export TF_VAR_state_bucket=$stateBucket
     ;;
+  --eks)
+    aws eks update-kubeconfig --name $TF_VAR_environment
+    ;;
+  --eks-cluster=*)
+    aws eks update-kubeconfig --name ${arg#--eks-cluster=}
+    ;;
   esac
 done
 
