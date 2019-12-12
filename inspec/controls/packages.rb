@@ -32,3 +32,14 @@ control 'packages-02' do
     its('version') { should match %r{^5\.\d+.\d} }
   end
 end
+
+control 'packages-03' do
+  impact 1.0
+  title "AWS CLI"
+
+  describe command('aws --version') do
+    its('exit_status') { should eq 0 }
+    its('stderr') { should match(%r{aws-cli/1\.\d+\.\d}) }
+    its('stderr') { should match(%r{botocore/1\.\d+\.\d}) }
+  end
+end
