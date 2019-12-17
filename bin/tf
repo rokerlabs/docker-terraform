@@ -24,12 +24,22 @@ options=""
 TF_VAR_environment="default"
 stateBucket=""
 
-if [ "${action}" == "apply" ]; then
-  options="-auto-approve"
+if [ "${action}" == "apply" ] || [ "${action}" == "destroy" ]; then
+  options="${options} -auto-approve"
 fi
 
 if [ "${TERRAFORM_DESTROY}" == "true" ]; then
-  options="${options} -destroy"
+  case $action in
+  plan)
+    options="${options} -destroy"
+    ;;
+  apply)
+    action="destroy"
+    ;;
+  *)
+    echo "WARN   Environment variable `TERRAFORM_DESTROY` only affects `plan` or `apply` commands"
+    ;;
+  esac
 fi
 
 for arg in "$@"; do
@@ -68,4 +78,4 @@ fi
 terraform init
 
 echo "+++ :terraform: ${action^}"
-terraform $action $options
+terraform $action$options
