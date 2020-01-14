@@ -24,11 +24,11 @@ options=""
 TF_VAR_environment="default"
 stateBucket=""
 
-if [ "${action}" == "apply" ] || [ "${action}" == "destroy" ]; then
+if [ "$action" == "apply" ] || [ "$action" == "destroy" ]; then
   options="${options} -auto-approve"
 fi
 
-if [ "${TERRAFORM_DESTROY}" == "true" ]; then
+if [ "$TERRAFORM_DESTROY" == "true" ]; then
   case $action in
   plan)
     options="${options} -destroy"
@@ -44,6 +44,9 @@ fi
 
 for arg in "$@"; do
   case $arg in
+  --service-name=*)
+    export TF_VAR_service_name=${arg#--service-name=}
+    ;;
   --env=*)
     export TF_VAR_environment=${arg#--env=}
     ;;
@@ -65,14 +68,22 @@ for arg in "$@"; do
   esac
 done
 
-if [ ! "${stateBucket}" == "" ]; then
+if [ ! "$stateBucket" == "" ]; then
   sed -i "s/STATE_BUCKET/${stateBucket}/" backend.tf
 fi
 
-if [ "${TF_VAR_environment}" == "default" ]; then
-  sed -i "s/STATE_FILE_LOCATION/terraform\/${AWS_REGION}/" backend.tf
+if [ "$TF_VAR_environment" == "default" ]; then
+  if [ -z "$TF_VAR_service_name" ]; then
+    sed -i "s/STATE_FILE_LOCATION/terraform\/${AWS_REGION}/" backend.tf
+  else
+    sed -i "s/STATE_FILE_LOCATION/terraform\/${AWS_REGION}\/${TF_VAR_service_name}.tfstate/" backend.tf
+  fi
 else
-  sed -i "s/STATE_FILE_LOCATION/terraform\/${TF_VAR_environment}\/${AWS_REGION}/" backend.tf
+  if [ -z "$TF_VAR_service_name" ]; then
+    sed -i "s/STATE_FILE_LOCATION/terraform\/${TF_VAR_environment}\/${AWS_REGION}/" backend.tf
+  else
+    sed -i "s/STATE_FILE_LOCATION/terraform\/${TF_VAR_environment}\/${AWS_REGION}\/${TF_VAR_service_name}.tfstate/" backend.tf
+  fi
 fi
 
 terraform init
