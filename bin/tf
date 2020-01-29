@@ -20,7 +20,7 @@ if [ -z "$AWS_REGION" ]; then
   fi
 fi
 
-options=""
+options=$TERRAFORM_OPTIONS
 TF_VAR_environment="default"
 stateBucket=""
 
