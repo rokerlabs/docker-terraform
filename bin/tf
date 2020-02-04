@@ -89,4 +89,4 @@ fi
 terraform init
 
 echo "+++ :terraform: ${action^}"
-terraform $action$options
+terraform $action$options -input=false
