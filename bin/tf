@@ -6,6 +6,10 @@ action=$1
 
 echo '--- :terraform: Init'
 
+ERROR='\033[0;31mERROR\033[0m  '
+WARN='\033[1;33mWARN\033[0m   '
+INFO='\033[0;32mINFO\033[0m   '
+
 if [ ! -z "$TERRAFORM_AWS_ACCESS_KEY_ID" ] && [ ! -z "$TERRAFORM_AWS_SECRET_ACCESS_KEY" ]; then
   export AWS_ACCESS_KEY_ID=$TERRAFORM_AWS_ACCESS_KEY_ID
   export AWS_SECRET_ACCESS_KEY=$TERRAFORM_AWS_SECRET_ACCESS_KEY
@@ -13,31 +17,31 @@ fi
 
 if [ -z "$AWS_REGION" ]; then
   if [ -z "$AWS_DEFAULT_REGION" ]; then
-    echo "ERROR   'AWS_REGION' or 'AWS_DEFAULT_REGION' must be set!"
+    echo "$ERROR 'AWS_REGION' or 'AWS_DEFAULT_REGION' must be set!"
     exit 1
   else
     export AWS_REGION=$AWS_DEFAULT_REGION
   fi
 fi
 
-options=$TERRAFORM_OPTIONS
+TF_CLI_ARGS="-input=false $TF_CLI_ARGS"
 TF_VAR_environment="default"
 stateBucket=""
 
 if [ "$action" == "apply" ] || [ "$action" == "destroy" ]; then
-  options="${options} -auto-approve"
+  TF_CLI_ARGS="-auto-approve $TF_CLI_ARGS"
 fi
 
 if [ "$TERRAFORM_DESTROY" == "true" ]; then
   case $action in
   plan)
-    options="${options} -destroy"
+    TF_CLI_ARGS="-destroy $TF_CLI_ARGS"
     ;;
   apply)
     action="destroy"
     ;;
   *)
-    echo "WARN   Environment variable `TERRAFORM_DESTROY` only affects `plan` or `apply` commands"
+    echo "$WARN Environment variable `TERRAFORM_DESTROY` only affects `plan` or `apply` commands"
     ;;
   esac
 fi
@@ -54,7 +58,7 @@ for arg in "$@"; do
     stateBucket=${arg#--state-bucket=}
 
     if [ ! -z "$AWS_ACCOUNT_ID" ]; then
-      stateBucket="${stateBucket}-${AWS_ACCOUNT_ID}"
+      stateBucket="$stateBucket-$AWS_ACCOUNT_ID"
     fi
 
     export TF_VAR_state_bucket=$stateBucket
@@ -69,24 +73,40 @@ for arg in "$@"; do
 done
 
 if [ ! "$stateBucket" == "" ]; then
-  sed -i "s/STATE_BUCKET/${stateBucket}/" backend.tf
+  if grep -q 'STATE_BUCKET' backend.tf; then
+    echo "$WARN backend.tf templating with 'STATE_BUCKET' will be deprecated. 'bucket = \"STATE_BUCKET\"' can be removed from your backend.tf as it is now redundant"
+  fi
+
+  if grep -q 'STATE_FILE_LOCATION' backend.tf; then
+    echo "$WARN backend.tf templating with 'STATE_FILE_LOCATION' will be deprecated. Use either the CLI arg '--service-name=MY_SERVICE' or set the environment variable 'TF_VAR_service_name', which will then set the backend key i.e. 'key = \"terraform/staging/us-east-1/MY_SERVICE.tfstate\"'"
+  fi
+
+  if [ -z "$TF_CLI_ARGS_init"]l then
+    export TF_CLI_ARGS_init="-backend-config=bucket=$stateBucket"
+  else
+    export TF_CLI_ARGS_init="$TF_CLI_ARGS_init -backend-config=bucket=$stateBucket"
+  fi
+
+  if [ "$TF_VAR_environment" == "default" ]; then
+    if [ -z "$TF_VAR_service_name" ]; then
+      # Legacy backend.tf rendering
+      sed -i "s/STATE_FILE_LOCATION/terraform\/$AWS_REGION/" backend.tf
+    else
+      export TF_CLI_ARGS_init="$TF_CLI_ARGS_init -backend-config=key=terraform/$AWS_REGION/$TF_VAR_service_name.tfstate"
+    fi
+  else
+    if [ -z "$TF_VAR_service_name" ]; then
+      # Legacy backend.tf rendering
+      sed -i "s/STATE_FILE_LOCATION/terraform\/$TF_VAR_environment\/$AWS_REGION/" backend.tf
+    else
+      export TF_CLI_ARGS_init="$TF_CLI_ARGS_init -backend-config=key=terraform/$TF_VAR_environment/$AWS_REGION/$TF_VAR_service_name.tfstate"
+    fi
+  fi
 fi
 
-if [ "$TF_VAR_environment" == "default" ]; then
-  if [ -z "$TF_VAR_service_name" ]; then
-    sed -i "s/STATE_FILE_LOCATION/terraform\/${AWS_REGION}/" backend.tf
-  else
-    sed -i "s/STATE_FILE_LOCATION/terraform\/${AWS_REGION}\/${TF_VAR_service_name}.tfstate/" backend.tf
-  fi
-else
-  if [ -z "$TF_VAR_service_name" ]; then
-    sed -i "s/STATE_FILE_LOCATION/terraform\/${TF_VAR_environment}\/${AWS_REGION}/" backend.tf
-  else
-    sed -i "s/STATE_FILE_LOCATION/terraform\/${TF_VAR_environment}\/${AWS_REGION}\/${TF_VAR_service_name}.tfstate/" backend.tf
-  fi
-fi
-
+echo "$INFO TF_CLI_ARGS_init='$TF_CLI_ARGS_init'"
 terraform init
 
 echo "+++ :terraform: ${action^}"
-terraform $action$options -input=false
+echo "$INFO TF_CLI_ARGS_$action='$TF_CLI_ARGS'"
+terraform $action $TF_CLI_ARGS
