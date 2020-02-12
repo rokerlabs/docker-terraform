@@ -6,9 +6,9 @@ action=$1
 
 echo '--- :terraform: Init'
 
-ERROR='\033[0;31mERROR\033[0m  '
-WARN='\033[1;33mWARN\033[0m   '
-INFO='\033[0;32mINFO\033[0m   '
+ERROR="\033[0;31mERROR\033[0m  "
+WARN="\033[1;33mWARN\033[0m   "
+INFO="\033[0;32mINFO\033[0m   "
 
 if [ ! -z "$TERRAFORM_AWS_ACCESS_KEY_ID" ] && [ ! -z "$TERRAFORM_AWS_SECRET_ACCESS_KEY" ]; then
   export AWS_ACCESS_KEY_ID=$TERRAFORM_AWS_ACCESS_KEY_ID
