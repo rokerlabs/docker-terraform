@@ -81,7 +81,7 @@ if [ ! "$stateBucket" == "" ]; then
     echo "$WARN backend.tf templating with 'STATE_FILE_LOCATION' will be deprecated. Use either the CLI arg '--service-name=MY_SERVICE' or set the environment variable 'TF_VAR_service_name', which will then set the backend key i.e. 'key = \"terraform/staging/us-east-1/MY_SERVICE.tfstate\"'"
   fi
 
-  if [ -z "$TF_CLI_ARGS_init"] then
+  if [ -z "$TF_CLI_ARGS_init"]; then
     export TF_CLI_ARGS_init="-backend-config=bucket=$stateBucket"
   else
     export TF_CLI_ARGS_init="$TF_CLI_ARGS_init -backend-config=bucket=$stateBucket"
