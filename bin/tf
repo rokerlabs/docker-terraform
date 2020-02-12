@@ -104,9 +104,9 @@ if [ ! "$stateBucket" == "" ]; then
   fi
 fi
 
-printf "$INFO TF_CLI_ARGS_init='$TF_CLI_ARGS_init'\n"
+printf "TF_CLI_ARGS_init='$TF_CLI_ARGS_init'\n\n"
 terraform init
 
 echo "+++ :terraform: ${action^}"
-printf "$INFO TF_CLI_ARGS_$action='$TF_CLI_ARGS'\n"
+printf "TF_CLI_ARGS_$action='$TF_CLI_ARGS'\n\n"
 terraform $action $TF_CLI_ARGS
