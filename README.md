@@ -4,4 +4,4 @@
 Terraform docker image [rokerlabs/terraform](https://hub.docker.com/repository/docker/rokerlabs/terraform).
 
 ## Copyright
-Copyright (c) 2019 Roker Labs. See [LICENSE](./LICENSE) for details.
+Copyright (c) 2020 Roker Tech Pty Ltd. See [LICENSE](./LICENSE) for details.
