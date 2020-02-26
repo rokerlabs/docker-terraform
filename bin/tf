@@ -28,10 +28,6 @@ TF_CLI_ARGS="-input=false $TF_CLI_ARGS"
 TF_VAR_environment="default"
 stateBucket=""
 
-if [ "$action" == "apply" ] || [ "$action" == "destroy" ]; then
-  TF_CLI_ARGS="-auto-approve $TF_CLI_ARGS"
-fi
-
 if [ "$TERRAFORM_DESTROY" == "true" ]; then
   case $action in
   plan)
@@ -44,6 +40,10 @@ if [ "$TERRAFORM_DESTROY" == "true" ]; then
     printf "$WARN Environment variable `TERRAFORM_DESTROY` only affects `plan` or `apply` commands\n"
     ;;
   esac
+fi
+
+if [ "$action" == "apply" ] || [ "$action" == "destroy" ]; then
+  TF_CLI_ARGS="-auto-approve $TF_CLI_ARGS"
 fi
 
 for arg in "$@"; do
