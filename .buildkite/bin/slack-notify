@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -eo pipefail
+
+# Notify Slack if a new Terraform release is available
+export DOCKER_CLI_EXPERIMENTAL=enabled
+
+if ! docker manifest inspect rokerlabs/terraform:${minor} >/dev/null; then
+  curl -X POST -H 'Content-type: application/json' \
+    --data "{\"text\":\"A new release is available for rokerlabs/terraform: ${minor}\"}" \
+    $SLACK_WEBHOOK_URL
+fi

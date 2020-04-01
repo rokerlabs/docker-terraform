@@ -2,6 +2,13 @@ steps:
   - label: ':docker: Build image'
     command: .buildkite/bin/build
 
+  - type: waiter
+    if: build.env("SCHEDULED_UPDATE") == "true"
+
+  - label: Notify Slack
+    command: .buildkite/bin/slack-notify
+    if: build.env("SCHEDULED_UPDATE") == "true"
+
   - type: block
     branches: master
 
