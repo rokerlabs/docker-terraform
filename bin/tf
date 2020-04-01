@@ -24,12 +24,14 @@ if [ -z "$AWS_REGION" ]; then
   fi
 fi
 
-TF_CLI_ARGS="-input=false $TF_CLI_ARGS"
+TF_CLI_ARGS=""
 TF_VAR_environment="default"
 stateBucket=""
 
 if [ "$action" == "apply" ] || [ "$action" == "destroy" ]; then
-  TF_CLI_ARGS="-auto-approve $TF_CLI_ARGS"
+  TF_CLI_ARGS="-input=false -auto-approve"
+elif [ "$action" == "plan" ]; then
+  TF_CLI_ARGS="-input=false"
 fi
 
 if [ "$TERRAFORM_DESTROY" == "true" ]; then
