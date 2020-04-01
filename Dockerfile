@@ -2,10 +2,11 @@ FROM alpine:latest
 
 ARG TERRAFORM_VERSION
 
-RUN apk --update add --no-cache git openssh bash
+RUN apk --update add --no-cache git openssh bash curl
 RUN git --version
 RUN ssh -V
 RUN bash --version
+RUN curl --version
 
 # Terraform handler bin stubs
 COPY ./bin /usr/local/bin
