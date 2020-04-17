@@ -2,11 +2,12 @@ FROM alpine:latest
 
 ARG TERRAFORM_VERSION
 
-RUN apk --update add --no-cache git openssh bash curl
+RUN apk --update add --no-cache git openssh bash curl zip
 RUN git --version
 RUN ssh -V
 RUN bash --version
 RUN curl --version
+RUN zip --version
 
 # Terraform handler bin stubs
 COPY ./bin /usr/local/bin
@@ -29,7 +30,7 @@ RUN kubectl version --short --client
 
 ADD https://amazon-eks.s3-us-west-2.amazonaws.com/1.14.6/2019-08-22/bin/linux/amd64/aws-iam-authenticator /bin/aws-iam-authenticator
 RUN chmod +x /bin/aws-iam-authenticator
-RUN aws-iam-authenticator help
+RUN aws-iam-authenticator version
 
 # Install aws-cli
 RUN apk add --no-cache python py-pip
