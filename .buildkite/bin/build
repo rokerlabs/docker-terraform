@@ -4,6 +4,13 @@ set -eo pipefail
 
 latest="true"
 imageRepo="${BUILDKITE_ORGANIZATION_SLUG}/${BUILDKITE_PIPELINE_SLUG}"
+dockerfile="Dockerfile"
+tagSuffix="beta"
+
+if [ ! -z "${IMAGE_VARIANT}" ]; then
+    dockerfile="${IMAGE_VARIANT}.Dockerfile"
+    tagSuffix=$IMAGE_VARIANT
+fi
 
 if [ -z "${TERRAFORM_VERSION}" ]; then
     latestReleaseTag=$(curl -s https://api.github.com/repos/hashicorp/terraform/releases/latest | jq -r '.tag_name')
@@ -21,21 +28,21 @@ major=${TERRAFORM_VERSION%.*}
 
 echo "+++ :docker: Build ${imageRepo}:${minor}"
 
-docker build . \
+docker build -f $dockerfile . \
     --build-arg TERRAFORM_VERSION \
-    -t ${imageRepo}:beta \
-    -t ${imageRepo}:${major}-beta \
-    -t ${imageRepo}:${minor}-beta
+    -t ${imageRepo}:${tagSuffix} \
+    -t ${imageRepo}:${major}-${tagSuffix} \
+    -t ${imageRepo}:${minor}-${tagSuffix}
 
 if [ "${BUILDKITE_BRANCH}" == "master" ]; then
-    echo "--- :docker: Push ${imageRepo}:${minor}-beta"
-    docker push ${imageRepo}:${minor}-beta
+    echo "--- :docker: Push ${imageRepo}:${minor}-${tagSuffix}"
+    docker push ${imageRepo}:${minor}-${tagSuffix}
 
     if [ "${latest}" == "true" ]; then
-        echo "--- :docker: Push ${imageRepo}:${major}-beta"
-        docker push ${imageRepo}:${major}-beta
+        echo "--- :docker: Push ${imageRepo}:${major}-${tagSuffix}"
+        docker push ${imageRepo}:${major}-${tagSuffix}
 
-        echo "--- :docker: Push ${imageRepo}:beta"
-        docker push ${imageRepo}:beta
+        echo "--- :docker: Push ${imageRepo}:${tagSuffix}"
+        docker push ${imageRepo}:${tagSuffix}
     fi
 fi

@@ -2,6 +2,11 @@ steps:
   - label: ':docker: Build image'
     command: .buildkite/bin/build
 
+  - label: ':docker: Build image awscli'
+    command: .buildkite/bin/build
+    env:
+      IMAGE_VARIANT: awscli
+
   - type: waiter
     if: build.env("SCHEDULED_UPDATE") == "true"
 
