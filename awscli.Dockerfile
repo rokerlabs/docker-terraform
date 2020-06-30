@@ -1,14 +1,8 @@
 FROM alpine:latest
-# FROM ubuntu:focal
 
 ARG TERRAFORM_VERSION
 
 RUN apk --update add --no-cache git openssh bash zip
-# RUN apt-get update -qq \
-#   && apt-get install -qq -y git zip unzip
-#   && apt-get autoremove -qq \
-#   && apt-get clean \
-#   && rm -r /var/lib/apt/lists/* /var/cache/apt
 RUN git --version
 RUN ssh -V
 RUN bash --version
@@ -28,10 +22,9 @@ RUN unzip -q terraform_${TERRAFORM_VERSION}_linux_amd64.zip -d /bin
 RUN rm -f terraform_${TERRAFORM_VERSION}_linux_amd64.zip terraform_${TERRAFORM_VERSION}_SHA256SUMS
 RUN terraform version
 
-# Install awscli
+# Install awscli with glibc compatibility for alpine
 ENV GLIBC_VER=2.31-r0
 
-# install glibc compatibility for alpine
 RUN apk --no-cache add binutils curl \
   && curl -sL https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub -o /etc/apk/keys/sgerrand.rsa.pub \
   && curl -sLO https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_VER}/glibc-${GLIBC_VER}.apk \
