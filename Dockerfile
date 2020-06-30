@@ -2,11 +2,13 @@ FROM alpine:latest
 
 ARG TERRAFORM_VERSION
 
-RUN apk --update add --no-cache git openssh bash zip
-RUN git --version
-RUN ssh -V
-RUN bash --version
-RUN zip --version
+RUN apk --update add --no-cache git openssh bash zip gzip brotli \
+  && git --version \
+  && ssh -V \
+  && bash --version \
+  && zip --version \
+  && gzip --version \
+  && brotli --version
 
 # Terraform handler bin stubs
 COPY ./bin /usr/local/bin
