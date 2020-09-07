@@ -46,7 +46,7 @@ if [ ! -z "$PULL_REQUEST_BASE_BRANCH" ] && [ "$PULL_REQUEST" != "false" ]; then
       change_word="decrease"
     fi
 
-    cost_diff=$(git diff --no-color --no-index base_infracost.txt pull_request_infracost.txt | tail -n +3)
+    cost_diff="$(git diff --no-color --no-index base_infracost.txt pull_request_infracost.txt | tail -n +3)"
     echo "$cost_diff"
     printf "$INFO Posting GitHub comment as $PULL_REQUEST_BASE_BRANCH branch and pull request diff ($absolute_percent_diff) is more than the percentage INFRACOST_CHANGE_THRESHOLD ($INFRACOST_CHANGE_THRESHOLD).\n"
     jq -Mnc --arg environment $TF_VAR_environment \
