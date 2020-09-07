@@ -18,7 +18,7 @@ printf "$INFO cli_args='$cli_args'\n"
 infracost $cli_args
 
 if [ ! -z "$PULL_REQUEST_BASE_BRANCH" ] && [ "$PULL_REQUEST" != "false" ]; then
-  echo "~~~ :money_with_wings: Infracost diff"
+  echo "+++ :money_with_wings: Infracost diff"
 
   if [ -z "$INFRACOST_CHANGE_THRESHOLD" ]; then
     INFRACOST_CHANGE_THRESHOLD=5
