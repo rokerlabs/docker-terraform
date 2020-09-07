@@ -8,8 +8,8 @@ fi
 
 CLI_ARGS="--tfdir $TF_DIR"
 
-if [ ! -z "$TF_PLAN" ]; then
-  CLI_ARGS="$CLI_ARGS --tfplan $TF_PLAN"
+if [ ! -z "$TF_PLAN_FILE" ]; then
+  CLI_ARGS="$CLI_ARGS --tfplan $TF_PLAN_FILE"
 fi
 
 if [ ! -z "$LOG_LEVEL" ]; then
