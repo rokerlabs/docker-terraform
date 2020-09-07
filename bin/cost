@@ -25,11 +25,11 @@ if [ ! -z "$PULL_REQUEST_BASE_BRANCH" ] && [ "$PULL_REQUEST" != "false" ]; then
 
   printf "\n$INFO INFRACOST_CHANGE_THRESHOLD=$INFRACOST_CHANGE_THRESHOLD\n\n"
 
-  git checkout $PULL_REQUEST_BASE_BRANCH
+  git checkout -q $PULL_REQUEST_BASE_BRANCH
   base_branch_breakdown=$(infracost --no-color $cli_args | tee base_branch_infracost.txt)
   base_branch_cost=$(echo $base_branch_breakdown | awk '/OVERALL TOTAL/ { print $NF }')
 
-  git checkout $PULL_REQUEST_COMMIT
+  git checkout -q $PULL_REQUEST_COMMIT
   pull_request=$(infracost --no-color $cli_args | tee pull_request_infracost.txt)
   pull_request_cost=$(echo $pull_request | awk '/OVERALL TOTAL/ { print $NF }')
 
