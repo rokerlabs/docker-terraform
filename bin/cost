@@ -36,10 +36,10 @@ if [ ! -z "$PULL_REQUEST_BASE_BRANCH" ] && [ "$PULL_REQUEST" != "false" ]; then
   percent_diff=$(echo "scale=4; $pull_request_cost / $base_branch_cost  * 100 - 100" | bc)
   absolute_percent_diff=$(echo $percent_diff | tr -d -)
 
-  if [[ "$absolute_percent_diff" -gt "$INFRACOST_CHANGE_THRESHOLD" ]]; then
+  if [ $(echo "$absolute_percent_diff > $INFRACOST_CHANGE_THRESHOLD" | bc -l) == 1 ]; then
     change_word="increase"
 
-    if [[ "$percent_diff" -lt "0" ]]; then
+    if [ $(echo "$percent_diff < 0" | bc -l) == 1 ]; then
       change_word="decrease"
     fi
 
