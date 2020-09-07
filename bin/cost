@@ -2,7 +2,7 @@
 
 set -eo pipefail
 
-echo "+++ :money_with_wings: Infracost"
+echo "+++ :moneybag: Infracost"
 
 if [ -z "$TF_DIR" ]; then
   TF_DIR=$(pwd)
@@ -18,6 +18,7 @@ printf "$INFO cli_args='$cli_args'\n"
 infracost $cli_args
 
 if [ ! -z "$PULL_REQUEST_BASE_BRANCH" ] && [ "$PULL_REQUEST" != "false" ]; then
+  echo "~~~ :money_with_wings: Infracost diff"
 
   if [ -z "$INFRACOST_CHANGE_THRESHOLD" ]; then
     INFRACOST_CHANGE_THRESHOLD=5
@@ -27,14 +28,12 @@ if [ ! -z "$PULL_REQUEST_BASE_BRANCH" ] && [ "$PULL_REQUEST" != "false" ]; then
 
   git checkout -q $PULL_REQUEST_BASE_BRANCH
   printf "$INFO Infracost breakdown for '$PULL_REQUEST_BASE_BRANCH'...\n"
-  base=$(infracost --no-color $cli_args)
-  echo "$base" | tee base_branch_infracost.txt
+  base=$(infracost --no-color $cli_args | tee base_infracost.txt)
   base_branch_cost=$(echo $base | awk '/OVERALL TOTAL/ { print $NF }')
 
   git checkout -q $PULL_REQUEST_COMMIT
   printf "$INFO Infracost breakdown for Pull Request...\n"
-  pull_request=$(infracost --no-color $cli_args)
-  echo "$pull_request" | tee pull_request_infracost.txt
+  pull_request=$(infracost --no-color $cli_args | tee pull_request_infracost.txt)
   pull_request_cost=$(echo $pull_request | awk '/OVERALL TOTAL/ { print $NF }')
 
   percent_diff=$(echo "scale=4; $pull_request_cost / $base_branch_cost  * 100 - 100" | bc)
@@ -47,6 +46,8 @@ if [ ! -z "$PULL_REQUEST_BASE_BRANCH" ] && [ "$PULL_REQUEST" != "false" ]; then
       change_word="decrease"
     fi
 
+    cost_diff=$(git diff --no-color --no-index base_infracost.txt pull_request_infracost.txt | tail -n +3)
+    echo "$cost_diff"
     printf "$INFO Posting GitHub comment as $PULL_REQUEST_BASE_BRANCH branch and pull request diff ($absolute_percent_diff) is more than the percentage INFRACOST_CHANGE_THRESHOLD ($INFRACOST_CHANGE_THRESHOLD).\n"
     jq -Mnc --arg environment $TF_VAR_environment \
             --arg change_word $change_word \
@@ -54,7 +55,7 @@ if [ ! -z "$PULL_REQUEST_BASE_BRANCH" ] && [ "$PULL_REQUEST" != "false" ]; then
             --arg base_branch $PULL_REQUEST_BASE_BRANCH \
             --arg base_branch_cost $base_branch_cost \
             --arg pull_request_cost $pull_request_cost \
-            --arg diff "$(git diff --no-color --no-index base_branch_infracost.txt pull_request_infracost.txt | tail -n +3)" \
+            --arg diff "$cost_diff" \
             '{body: "**Environment:** `\($environment)`\n\nMonthly cost estimate will \($change_word) by \($absolute_percent_diff)% ($\($base_branch) branch $\($base_branch_cost) vs pull request $\($pull_request_cost))\n<details><summary>infracost diff</summary>\n\n```diff\n\($diff)\n```\n</details>\n"}' | \
             curl -sL -X POST -d @- \
               -H "Content-Type: application/json" \
