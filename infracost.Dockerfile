@@ -2,6 +2,10 @@ FROM rokerlabs/terraform:beta
 
 ENV INFRACOST_VERSION=latest
 
+RUN apk --update add --no-cache curl jq \
+  && curl --version \
+  && jq --version
+
 # Terraform handler bin stubs
 COPY ./bin/cost /usr/local/bin/cost
 RUN chmod +x /usr/local/bin/cost

@@ -19,8 +19,8 @@ infracost $cli_args
 
 if [ ! -z "$PULL_REQUEST_BASE_BRANCH" ] && [ "$PULL_REQUEST" != "false" ]; then
 
-  if [ ! -z "$INFRACOST_CHANGE_THRESHOLD" ]; then
-    INFRACOST_CHANGE_THRESHOLD=1
+  if [ -z "$INFRACOST_CHANGE_THRESHOLD" ]; then
+    INFRACOST_CHANGE_THRESHOLD=5
   fi
 
   printf "\n$INFO INFRACOST_CHANGE_THRESHOLD=$INFRACOST_CHANGE_THRESHOLD\n\n"
