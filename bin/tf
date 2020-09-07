@@ -28,26 +28,6 @@ TF_CLI_ARGS=""
 TF_VAR_environment="default"
 stateBucket=""
 
-if [ "$action" == "apply" ] || [ "$action" == "destroy" ]; then
-  TF_CLI_ARGS="-input=false -auto-approve"
-elif [ "$action" == "plan" ]; then
-  TF_CLI_ARGS="-input=false"
-fi
-
-if [ "$TERRAFORM_DESTROY" == "true" ]; then
-  case $action in
-  plan)
-    TF_CLI_ARGS="-destroy $TF_CLI_ARGS"
-    ;;
-  apply)
-    action="destroy"
-    ;;
-  *)
-    printf "$WARN Environment variable `TERRAFORM_DESTROY` only affects `plan` or `apply` commands\n"
-    ;;
-  esac
-fi
-
 for arg in "$@"; do
   case $arg in
   --service-name=*)
@@ -73,6 +53,26 @@ for arg in "$@"; do
     ;;
   esac
 done
+
+if [ "$action" == "apply" ] || [ "$action" == "destroy" ]; then
+  TF_CLI_ARGS="-input=false -auto-approve"
+elif [ "$action" == "plan" ]; then
+  TF_CLI_ARGS="-input=false -out=${TF_VAR_environment}.plan"
+fi
+
+if [ "$TERRAFORM_DESTROY" == "true" ]; then
+  case $action in
+  plan)
+    TF_CLI_ARGS="-destroy $TF_CLI_ARGS"
+    ;;
+  apply)
+    action="destroy"
+    ;;
+  *)
+    printf "$WARN Environment variable `TERRAFORM_DESTROY` only affects `plan` or `apply` commands\n"
+    ;;
+  esac
+fi
 
 if [ ! "$stateBucket" == "" ]; then
   if grep -q 'STATE_BUCKET' backend.tf; then

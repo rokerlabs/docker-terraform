@@ -2,22 +2,21 @@ steps:
   - label: ':docker: Build image'
     command: .buildkite/bin/build
 
-  - type: waiter
+  - wait:
     if: build.env("SCHEDULED_UPDATE") == "true"
 
   - label: Notify Slack
     command: .buildkite/bin/slack-notify
     if: build.env("SCHEDULED_UPDATE") == "true"
 
-  - type: waiter
-    branches: master
+  - wait
 
   - label: ':docker: Build image awscli'
     command: .buildkite/bin/build
     env:
       IMAGE_VARIANT: awscli
 
-  - type: block
+  - block:
     branches: master
 
   - label: ':docker: Tag latest'
