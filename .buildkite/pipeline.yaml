@@ -16,6 +16,11 @@ steps:
     env:
       IMAGE_VARIANT: awscli
 
+  - label: ':docker: Build image awscli'
+    command: .buildkite/bin/build
+    env:
+      IMAGE_VARIANT: infracost
+
   - block:
     branches: master
 
