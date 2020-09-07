@@ -7,7 +7,7 @@ environment_message=""
 for arg in "$@"; do
   case $arg in
   --env=*)
-    environment_message="**Environment:** `${arg#--env=}`\n\n"
+    environment_message="**Environment:** \`${arg#--env=}\`\\n\\n"
     ;;
   esac
 done
