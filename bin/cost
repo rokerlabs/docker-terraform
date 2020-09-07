@@ -14,7 +14,7 @@ if [ ! -z "$LOG_LEVEL" ]; then
   cli_args="$cli_args --log-level $LOG_LEVEL"
 fi
 
-printf "$INFO cli_args='$cli_args'\n\n"
+printf "$INFO cli_args='$cli_args'\n"
 infracost $cli_args
 
 if [ ! -z "$PULL_REQUEST_BASE_BRANCH" ] && [ "$PULL_REQUEST" != "false" ]; then
@@ -23,14 +23,18 @@ if [ ! -z "$PULL_REQUEST_BASE_BRANCH" ] && [ "$PULL_REQUEST" != "false" ]; then
     INFRACOST_CHANGE_THRESHOLD=5
   fi
 
-  printf "\n$INFO INFRACOST_CHANGE_THRESHOLD=$INFRACOST_CHANGE_THRESHOLD\n\n"
+  printf "$INFO INFRACOST_CHANGE_THRESHOLD=$INFRACOST_CHANGE_THRESHOLD\n"
 
   git checkout -q $PULL_REQUEST_BASE_BRANCH
-  base_branch_breakdown=$(infracost --no-color $cli_args | tee base_branch_infracost.txt)
-  base_branch_cost=$(echo $base_branch_breakdown | awk '/OVERALL TOTAL/ { print $NF }')
+  printf "$INFO Infracost breakdown for '$PULL_REQUEST_BASE_BRANCH'...\n"
+  base=$(infracost --no-color $cli_args)
+  echo "$base" | tee base_branch_infracost.txt
+  base_branch_cost=$(echo $base | awk '/OVERALL TOTAL/ { print $NF }')
 
   git checkout -q $PULL_REQUEST_COMMIT
-  pull_request=$(infracost --no-color $cli_args | tee pull_request_infracost.txt)
+  printf "$INFO Infracost breakdown for Pull Request...\n"
+  pull_request=$(infracost --no-color $cli_args)
+  echo "$pull_request" | tee pull_request_infracost.txt
   pull_request_cost=$(echo $pull_request | awk '/OVERALL TOTAL/ { print $NF }')
 
   percent_diff=$(echo "scale=4; $pull_request_cost / $base_branch_cost  * 100 - 100" | bc)
