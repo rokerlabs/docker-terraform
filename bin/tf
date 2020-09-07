@@ -57,7 +57,12 @@ done
 if [ "$action" == "apply" ] || [ "$action" == "destroy" ]; then
   TF_CLI_ARGS="-input=false -auto-approve"
 elif [ "$action" == "plan" ]; then
-  TF_CLI_ARGS="-input=false -out=${TF_VAR_environment}.plan"
+
+  if [ -z "$TF_PLAN_FILE" ]; then
+    TF_PLAN_FILE="${TF_VAR_environment}.plan"
+  fi
+
+  TF_CLI_ARGS="-input=false -out=${TF_PLAN_FILE}"
 fi
 
 if [ "$TERRAFORM_DESTROY" == "true" ]; then
