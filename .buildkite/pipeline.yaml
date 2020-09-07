@@ -16,7 +16,7 @@ steps:
     env:
       IMAGE_VARIANT: awscli
 
-  - label: ':docker: Build image awscli'
+  - label: ':docker: Build image infracost'
     command: .buildkite/bin/build
     env:
       IMAGE_VARIANT: infracost
