@@ -57,12 +57,7 @@ done
 if [ "$action" == "apply" ] || [ "$action" == "destroy" ]; then
   TF_CLI_ARGS="-input=false -auto-approve"
 elif [ "$action" == "plan" ]; then
-
-  if [ -z "$TF_PLAN_FILE" ]; then
-    TF_PLAN_FILE="${TF_VAR_environment}.plan"
-  fi
-
-  TF_CLI_ARGS="-input=false -out=${TF_PLAN_FILE}"
+  TF_CLI_ARGS="-input=false"
 fi
 
 if [ "$TERRAFORM_DESTROY" == "true" ]; then
@@ -111,9 +106,13 @@ if [ ! "$stateBucket" == "" ]; then
   fi
 fi
 
-printf "TF_CLI_ARGS_init='$TF_CLI_ARGS_init'\n\n"
+printf "$INFO TF_CLI_ARGS_init='$TF_CLI_ARGS_init'\n\n"
 terraform init
 
 echo "+++ :terraform: ${action^}"
-printf "TF_CLI_ARGS_$action='$TF_CLI_ARGS'\n\n"
+printf "$INFO TF_CLI_ARGS_$action='$TF_CLI_ARGS'\n\n"
 terraform $action $TF_CLI_ARGS
+
+if [ "$action" == "plan" ] && [ -f /usr/local/bin/cost ]; then
+  /usr/local/bin/cost
+fi
