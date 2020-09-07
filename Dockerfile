@@ -11,7 +11,10 @@ RUN apk --update add --no-cache git openssh bash zip gzip brotli \
   && brotli --version
 
 # Terraform handler bin stubs
-COPY ./bin /usr/local/bin
+COPY ./bin/apply /usr/local/bin/apply
+COPY ./bin/plan /usr/local/bin/plan
+COPY ./bin/tf /usr/local/bin/tf
+COPY ./bin/validate /usr/local/bin/validate
 RUN chmod +x /usr/local/bin/*
 
 # Install terraform

@@ -1,5 +1,5 @@
 steps:
-  - label: ':docker: Build image'
+  - label: ':docker: Build base image'
     command: .buildkite/bin/build
 
   - wait:
@@ -15,6 +15,11 @@ steps:
     command: .buildkite/bin/build
     env:
       IMAGE_VARIANT: awscli
+
+  - label: ':docker: Build image infracost'
+    command: .buildkite/bin/build
+    env:
+      IMAGE_VARIANT: infracost
 
   - block:
     branches: master
