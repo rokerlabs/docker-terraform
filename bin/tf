@@ -6,9 +6,9 @@ action=$1
 
 echo '--- :terraform: Init'
 
-ERROR='\033[0;31mERROR\033[0m  '
-WARN='\033[1;33mWARN\033[0m   '
-INFO='\033[0;32mINFO\033[0m   '
+export ERROR='\033[0;31mERROR\033[0m '
+export WARNING='\033[0;33mWARNING\033[0m '
+export INFO='\033[0;36mINFO\033[0m '
 
 if [ ! -z "$TERRAFORM_AWS_ACCESS_KEY_ID" ] && [ ! -z "$TERRAFORM_AWS_SECRET_ACCESS_KEY" ]; then
   export AWS_ACCESS_KEY_ID=$TERRAFORM_AWS_ACCESS_KEY_ID
@@ -69,18 +69,18 @@ if [ "$TERRAFORM_DESTROY" == "true" ]; then
     action="destroy"
     ;;
   *)
-    printf "$WARN Environment variable `TERRAFORM_DESTROY` only affects `plan` or `apply` commands\n"
+    printf "$WARNING Environment variable `TERRAFORM_DESTROY` only affects `plan` or `apply` commands\n"
     ;;
   esac
 fi
 
 if [ ! "$stateBucket" == "" ]; then
   if grep -q 'STATE_BUCKET' backend.tf; then
-    printf "$WARN backend.tf templating with 'STATE_BUCKET' will be deprecated. 'bucket = \"STATE_BUCKET\"' can be removed from your backend.tf as it is now redundant\n"
+    printf "$WARNING backend.tf templating with 'STATE_BUCKET' will be deprecated. 'bucket = \"STATE_BUCKET\"' can be removed from your backend.tf as it is now redundant\n"
   fi
 
   if grep -q 'STATE_FILE_LOCATION' backend.tf; then
-    printf "$WARN backend.tf templating with 'STATE_FILE_LOCATION' will be deprecated. Use either the CLI arg '--service-name=MY_SERVICE' or set the environment variable 'TF_VAR_service_name', which will then set the backend key i.e. 'key = \"terraform/staging/us-east-1/MY_SERVICE.tfstate\"'\n"
+    printf "$WARNING backend.tf templating with 'STATE_FILE_LOCATION' will be deprecated. Use either the CLI arg '--service-name=MY_SERVICE' or set the environment variable 'TF_VAR_service_name', which will then set the backend key i.e. 'key = \"terraform/staging/us-east-1/MY_SERVICE.tfstate\"'\n"
   fi
 
   if [ -z "$TF_CLI_ARGS_init"]; then
