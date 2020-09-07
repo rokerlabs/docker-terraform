@@ -20,7 +20,7 @@ echo "+++ :money_with_wings: Infracost"
 echo "CLI_ARGS=$CLI_ARGS"
 infracost $CLI_ARGS
 
-if [ ! -z "$PULL_REQUEST_BASE_BRANCH" ]; then
+if [ ! -z "$PULL_REQUEST_BASE_BRANCH" ] && [ "$PULL_REQUEST" != "false" ]; then
 
   if [ ! -z "$CHANGE_THRESHOLD" ]; then
     CHANGE_THRESHOLD=1
