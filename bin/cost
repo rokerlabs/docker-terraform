@@ -44,7 +44,7 @@ if [ ! -z "$PULL_REQUEST_BASE_BRANCH" ] && [ "$PULL_REQUEST" != "false" ]; then
       change_word="decrease"
     fi
 
-    printf "$INFO Posting GitHub comment as $PULL_REQUEST_BASE_BRANCH branch and Pull Request diff ($absolute_percent_diff%) is greater than the change threshold (+/- $INFRACOST_CHANGE_THRESHOLD%).\n"
+    printf "$INFO Posting GitHub comment as $PULL_REQUEST_BASE_BRANCH branch and Pull Request diff ($absolute_percent_diff%%) is greater than the change threshold (+/-$INFRACOST_CHANGE_THRESHOLD%%).\n"
     jq -Mnc --arg environment $TF_VAR_environment \
             --arg change_word $change_word \
             --arg absolute_percent_diff $(printf '%.1f\n' $absolute_percent_diff) \
@@ -58,6 +58,6 @@ if [ ! -z "$PULL_REQUEST_BASE_BRANCH" ] && [ "$PULL_REQUEST" != "false" ]; then
               -H "Authorization: token $GITHUB_TOKEN" \
               "https://api.github.com/repos/$GITHUB_REPOSITORY/commits/$PULL_REQUEST_COMMIT/comments" > /dev/null
   else
-    printf "$INFO GitHub comment not posted as $PULL_REQUEST_BASE_BRANCH branch and pull request diff ($absolute_percent_diff%) is not greater than the change threshold (+/- $INFRACOST_CHANGE_THRESHOLD%).\n"
+    printf "$INFO GitHub comment not posted as $PULL_REQUEST_BASE_BRANCH branch and pull request diff ($absolute_percent_diff%%) is not greater than the change threshold (+/-$INFRACOST_CHANGE_THRESHOLD%%).\n"
   fi
 fi
