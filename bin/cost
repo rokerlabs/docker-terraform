@@ -21,7 +21,7 @@ if [ ! -z "$PULL_REQUEST_BASE_BRANCH" ] && [ "$PULL_REQUEST" != "false" ]; then
   echo "+++ :money_with_wings: Infracost diff"
 
   # Check required environment variables have been set
-  if [ -z "$PULL_REQUEST_COMMIT" ] || ; then
+  if [ -z "$GITHUB_REPOSITORY" ] || [ -z "$GITHUB_TOKEN" ] || [ -z "$PULL_REQUEST_COMMIT" ] || [ -z "$TF_VAR_environment" ]; then
     printf "$ERROR One of the following ENVs have not been set:\nGITHUB_REPOSITORY='$GITHUB_REPOSITORY'\nGITHUB_TOKEN='${GITHUB_TOKEN//[a-zA-z0-9]/.}'\nPULL_REQUEST_COMMIT='$PULL_REQUEST_COMMIT'\nTF_VAR_environment='$TF_VAR_environment'\n"
     exit 1
   fi
