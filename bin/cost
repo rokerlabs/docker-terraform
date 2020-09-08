@@ -20,6 +20,12 @@ infracost $cli_args
 if [ ! -z "$PULL_REQUEST_BASE_BRANCH" ] && [ "$PULL_REQUEST" != "false" ]; then
   echo "+++ :money_with_wings: Infracost diff"
 
+  # Check required environment variables have been set
+  if [ -z "$PULL_REQUEST_COMMIT" ] || ; then
+    printf "$ERROR One of the following ENVs have not been set:\nGITHUB_REPOSITORY='$GITHUB_REPOSITORY'\nGITHUB_TOKEN='${GITHUB_TOKEN//[a-zA-z0-9]/.}'\nPULL_REQUEST_COMMIT='$PULL_REQUEST_COMMIT'\nTF_VAR_environment='$TF_VAR_environment'\n"
+    exit 1
+  fi
+
   if [ -z "$INFRACOST_CHANGE_THRESHOLD" ]; then
     INFRACOST_CHANGE_THRESHOLD=5
   fi
@@ -56,7 +62,7 @@ if [ ! -z "$PULL_REQUEST_BASE_BRANCH" ] && [ "$PULL_REQUEST" != "false" ]; then
             curl -sSL -X POST -d @- \
               -H "Content-Type: application/json" \
               -H "Authorization: token $GITHUB_TOKEN" \
-              "https://api.github.com/repos/$GITHUB_REPOSITORY/commits/$PULL_REQUEST_COMMIT/comments"
+              "https://api.github.com/repos/$GITHUB_REPOSITORY/commits/$PULL_REQUEST_COMMIT/comments" > /dev/null
   else
     printf "$INFO GitHub comment not posted as $PULL_REQUEST_BASE_BRANCH branch and pull request diff ($absolute_percent_diff%%) is not greater than the change threshold (+/-$INFRACOST_CHANGE_THRESHOLD%%).\n"
   fi
