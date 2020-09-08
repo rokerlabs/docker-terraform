@@ -53,10 +53,10 @@ if [ ! -z "$PULL_REQUEST_BASE_BRANCH" ] && [ "$PULL_REQUEST" != "false" ]; then
             --arg pull_request_cost $pull_request_cost \
             --arg diff "$(git diff --no-color --no-index base_infracost.txt pull_request_infracost.txt | tail -n +6)" \
             '{body: "**Environment:** `\($environment)`\n\nMonthly cost estimate will \($change_word) by \($absolute_percent_diff)% ($\($base_branch) branch $\($base_branch_cost) vs pull request $\($pull_request_cost))\n<details><summary>infracost diff</summary>\n\n```diff\n\($diff)\n```\n</details>\n"}' | \
-            curl -sL -X POST -d @- \
+            curl -sSL -X POST -d @- \
               -H "Content-Type: application/json" \
               -H "Authorization: token $GITHUB_TOKEN" \
-              "https://api.github.com/repos/$GITHUB_REPOSITORY/commits/$PULL_REQUEST_COMMIT/comments" > /dev/null
+              "https://api.github.com/repos/$GITHUB_REPOSITORY/commits/$PULL_REQUEST_COMMIT/comments"
   else
     printf "$INFO GitHub comment not posted as $PULL_REQUEST_BASE_BRANCH branch and pull request diff ($absolute_percent_diff%%) is not greater than the change threshold (+/-$INFRACOST_CHANGE_THRESHOLD%%).\n"
   fi
