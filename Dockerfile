@@ -2,10 +2,11 @@ FROM alpine:latest
 
 ARG TERRAFORM_VERSION
 
-RUN apk --update add --no-cache git openssh bash zip gzip brotli \
+RUN apk --update add --no-cache git openssh bash curl zip gzip brotli \
   && git --version \
   && ssh -V \
   && bash --version \
+  && curl --version \
   && zip --version \
   && gzip --version \
   && brotli --version
