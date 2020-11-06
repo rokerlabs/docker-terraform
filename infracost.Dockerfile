@@ -2,8 +2,7 @@ FROM rokerlabs/terraform:beta
 
 ENV INFRACOST_VERSION=latest
 
-RUN apk --update add --no-cache curl jq \
-  && curl --version \
+RUN apk --update add --no-cache jq \
   && jq --version
 
 # Terraform handler bin stubs
