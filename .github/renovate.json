@@ -3,32 +3,6 @@
     "samjmarshall"
   ],
   "extends": [
-    "config:base"
-  ],
-  "packageRules": [
-    {
-      "managers": ["buildkite"],
-      "extends": [":semanticCommitTypeAll(ci)"]
-    },
-    {
-      "managers": ["buildkite"],
-      "updateTypes": ["minor"],
-      "automerge": true,
-      "automergeType": "branch"
-    }
-  ],
-  "patch": {
-    "automerge": true,
-    "automergeType": "branch"
-  },
-  "pin": {
-    "automerge": true,
-    "automergeType": "branch"
-  },
-  "prCreation": "not-pending",
-  "reviewers": [
-    "samjmarshall"
-  ],
-  "semanticCommits": "enabled",
-  "separateMinorPatch": true
+    "github>rokerlabs/renovate-config"
+  ]
 }
