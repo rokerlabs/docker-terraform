@@ -1,8 +1,8 @@
-FROM alpine:latest
+FROM hashicorp/terraform:0.14.9
 
 ARG TERRAFORM_VERSION
 
-RUN apk --update add --no-cache git openssh openssl bash curl jq zip gzip brotli \
+RUN apk --update add --no-cache openssh curl jq zip gzip brotli \
   && git --version \
   && ssh -V \
   && openssl version \ 
@@ -21,11 +21,7 @@ COPY ./bin/validate /usr/local/bin/validate
 RUN chmod +x /usr/local/bin/*
 
 # Install terraform
-ADD https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip ./
-ADD https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_SHA256SUMS ./
-
-RUN sed -i '/.*linux_amd64.zip/!d' terraform_${TERRAFORM_VERSION}_SHA256SUMS
-RUN sha256sum -c terraform_${TERRAFORM_VERSION}_SHA256SUMS
-RUN unzip -q terraform_${TERRAFORM_VERSION}_linux_amd64.zip -d /bin
-RUN rm -f terraform_${TERRAFORM_VERSION}_linux_amd64.zip terraform_${TERRAFORM_VERSION}_SHA256SUMS
 RUN terraform version
+
+# Upstream image runs terraform in current working directory, we require user defined command execution.
+ENTRYPOINT []
