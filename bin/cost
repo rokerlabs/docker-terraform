@@ -4,11 +4,9 @@ set -eo pipefail
 
 echo "+++ :moneybag: Infracost"
 
-if [ -z "$TF_DIR" ]; then
-  TF_DIR=$(pwd)
-fi
+export INFRACOST_SKIP_UPDATE_CHECK=true
 
-cli_args="--tfdir $TF_DIR"
+cli_args="--path $(pwd)"
 
 if [ ! -z "$LOG_LEVEL" ]; then
   cli_args="$cli_args --log-level $LOG_LEVEL"
