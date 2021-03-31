@@ -55,9 +55,9 @@ for arg in "$@"; do
 done
 
 if [ "$action" == "apply" ] || [ "$action" == "destroy" ]; then
-  TF_CLI_ARGS="-input=false -auto-approve"
+  TF_CLI_ARGS="-refresh=true -input=false -auto-approve"
 elif [ "$action" == "plan" ]; then
-  TF_CLI_ARGS="-input=false"
+  TF_CLI_ARGS="-refresh=true -input=false"
 fi
 
 if [ "$TERRAFORM_DESTROY" == "true" ]; then
