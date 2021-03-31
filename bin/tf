@@ -110,6 +110,13 @@ printf "$INFO TF_CLI_ARGS_init='$TF_CLI_ARGS_init'\n\n"
 terraform init
 
 if [ "$TERRAFORM_REFRESH" != "false" ]; then
+  if [ -z "$TF_CLI_ARGS_refresh"]; then
+    export TF_CLI_ARGS_refresh="-input=false"
+  else
+    export TF_CLI_ARGS_refresh="$TF_CLI_ARGS_refresh -input=false"
+  fi
+
+  printf "$INFO TF_CLI_ARGS_refresh='$TF_CLI_ARGS_refresh'\n\n"
   terraform refresh
 fi
 
