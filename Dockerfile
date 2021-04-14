@@ -1,7 +1,5 @@
 FROM hashicorp/terraform:0.14.10
 
-ARG TERRAFORM_VERSION
-
 RUN apk --update add --no-cache openssh openssl bash curl jq zip gzip brotli \
   && git --version \
   && ssh -V \
