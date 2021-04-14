@@ -76,12 +76,19 @@ fi
 
 if [ ! "$stateBucket" == "" ]; then
   if grep -q 'STATE_BUCKET' backend.tf; then
-    printf "$WARNING backend.tf templating with 'STATE_BUCKET' will be deprecated. 'bucket = \"STATE_BUCKET\"' can be removed from your backend.tf as it is now redundant\n"
+    printf "$ERROR backend.tf templating with 'STATE_BUCKET' will be deprecated. 'bucket = \"STATE_BUCKET\"' can be removed from your backend.tf as it is now redundant\n"
+    exit 1
   fi
 
   if grep -q 'STATE_FILE_LOCATION' backend.tf; then
-    printf "$WARNING backend.tf templating with 'STATE_FILE_LOCATION' will be deprecated. Use either the CLI arg '--service-name=MY_SERVICE' or set the environment variable 'TF_VAR_service_name', which will then set the backend key i.e. 'key = \"terraform/staging/us-east-1/MY_SERVICE.tfstate\"'\n"
+    printf "$ERROR backend.tf templating with 'STATE_FILE_LOCATION' will be deprecated. Use either the CLI arg '--service-name=MY_SERVICE' or set the environment variable 'TF_VAR_service_name', which will then set the backend key i.e. 'key = \"terraform/staging/us-east-1/MY_SERVICE.tfstate\"'\n"
+    exit 1
   fi
+
+  if [ -z "$TF_VAR_service_name" ]; then
+    printf "$ERROR Missing service name. Use the CLI option '--service-name=name' or set environment variable 'TF_VAR_service_name'.\n"
+    exit 1
+  else
 
   if [ -z "$TF_CLI_ARGS_init"]; then
     export TF_CLI_ARGS_init="-backend-config=bucket=$stateBucket"
@@ -90,26 +97,16 @@ if [ ! "$stateBucket" == "" ]; then
   fi
 
   if [ "$TF_VAR_environment" == "default" ]; then
-    if [ -z "$TF_VAR_service_name" ]; then
-      # Legacy backend.tf rendering
-      sed -i "s/STATE_FILE_LOCATION/terraform\/$AWS_REGION/" backend.tf
-    else
-      export TF_CLI_ARGS_init="$TF_CLI_ARGS_init -backend-config=key=terraform/$AWS_REGION/$TF_VAR_service_name.tfstate"
-    fi
+    export TF_CLI_ARGS_init="$TF_CLI_ARGS_init -backend-config=key=terraform/$AWS_REGION/$TF_VAR_service_name.tfstate"
   else
-    if [ -z "$TF_VAR_service_name" ]; then
-      # Legacy backend.tf rendering
-      sed -i "s/STATE_FILE_LOCATION/terraform\/$TF_VAR_environment\/$AWS_REGION/" backend.tf
-    else
-      export TF_CLI_ARGS_init="$TF_CLI_ARGS_init -backend-config=key=terraform/$TF_VAR_environment/$AWS_REGION/$TF_VAR_service_name.tfstate"
-    fi
+    export TF_CLI_ARGS_init="$TF_CLI_ARGS_init -backend-config=key=terraform/$TF_VAR_environment/$AWS_REGION/$TF_VAR_service_name.tfstate"
   fi
 fi
 
 printf "$INFO TF_CLI_ARGS_init='$TF_CLI_ARGS_init'\n\n"
 terraform init
 
-if [ "$TERRAFORM_REFRESH" != "false" ]; then
+if [ "$TERRAFORM_REFRESH" != "false" ] && [ "$action" != "validate" ]; then
   if [ -z "$TF_CLI_ARGS_refresh"]; then
     export TF_CLI_ARGS_refresh="-input=false"
   else
