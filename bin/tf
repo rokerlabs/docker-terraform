@@ -88,7 +88,7 @@ if [ ! "$stateBucket" == "" ]; then
   if [ -z "$TF_VAR_service_name" ]; then
     printf "$ERROR Missing service name. Use the CLI option '--service-name=name' or set environment variable 'TF_VAR_service_name'.\n"
     exit 1
-  else
+  fi
 
   if [ -z "$TF_CLI_ARGS_init"]; then
     export TF_CLI_ARGS_init="-backend-config=bucket=$stateBucket"
@@ -106,7 +106,7 @@ fi
 printf "$INFO TF_CLI_ARGS_init='$TF_CLI_ARGS_init'\n\n"
 terraform init
 
-if [ "$TERRAFORM_REFRESH" != "false" ] && [ "$action" != "validate" ]; then
+if [ "$TERRAFORM_REFRESH" != "false" ]; then
   if [ -z "$TF_CLI_ARGS_refresh"]; then
     export TF_CLI_ARGS_refresh="-input=false"
   else
