@@ -1,4 +1,4 @@
-FROM hashicorp/terraform:0.14.9
+FROM hashicorp/terraform:0.14.10
 
 ARG TERRAFORM_VERSION
 
