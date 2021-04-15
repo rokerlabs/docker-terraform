@@ -24,6 +24,18 @@ steps:
   - block:
     branches: master
 
-  - label: ':docker: Tag latest'
+  - label: ':docker: Tag base latest'
     command: .buildkite/bin/release
+    branches: master
+
+  - label: ':docker: Tag awscli'
+    command: .buildkite/bin/release
+    env:
+      IMAGE_VARIANT: awscli
+    branches: master
+
+  - label: ':docker: Tag infracost'
+    command: .buildkite/bin/release
+    env:
+      IMAGE_VARIANT: infracost
     branches: master

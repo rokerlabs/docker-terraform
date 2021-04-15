@@ -8,7 +8,7 @@ tagSuffix="beta"
 
 if [ ! -z "${IMAGE_VARIANT}" ]; then
     dockerfile="${IMAGE_VARIANT}.Dockerfile"
-    tagSuffix=$IMAGE_VARIANT
+    tagSuffix="$tagSuffix-$IMAGE_VARIANT"
 fi
 
 version=$(grep 'FROM hashicorp/terraform' Dockerfile | awk -F: '{print $2}')
