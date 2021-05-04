@@ -1,4 +1,4 @@
-FROM infracost/infracost:v0.8.5 as infracost
+FROM infracost/infracost:v0.8.6 as infracost
 
 RUN infracost --version
 
