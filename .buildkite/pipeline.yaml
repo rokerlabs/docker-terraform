@@ -21,8 +21,11 @@ steps:
     env:
       IMAGE_VARIANT: infracost
 
+  - wait:
+    if: build.branch == "master" && build.author.name == "renovate-bot"
+
   - block:
-    branches: master
+    if: build.branch == "master" && build.author.name != "renovate-bot"
 
   - label: ':docker: Tag latest'
     command: .buildkite/bin/release
