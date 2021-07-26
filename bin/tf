@@ -27,7 +27,7 @@ fi
 TF_CLI_ARGS=""
 
 if [ -z "$ENV" ]; then
-  ENV="default"
+  export ENV="default"
 fi
 
 TF_VAR_environment=$ENV
