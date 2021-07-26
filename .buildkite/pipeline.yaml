@@ -16,11 +16,6 @@ steps:
     env:
       IMAGE_VARIANT: awscli
 
-  - label: ':docker: Build image infracost'
-    command: .buildkite/bin/build
-    env:
-      IMAGE_VARIANT: infracost
-
   - wait:
     if: build.branch == "master" && build.author.name == "renovate-bot"
 
@@ -35,10 +30,4 @@ steps:
     command: .buildkite/bin/release
     env:
       IMAGE_VARIANT: awscli
-    branches: master
-
-  - label: ':docker: Tag infracost'
-    command: .buildkite/bin/release
-    env:
-      IMAGE_VARIANT: infracost
     branches: master
