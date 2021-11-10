@@ -1,4 +1,4 @@
-FROM hashicorp/terraform:1.0.10
+FROM hashicorp/terraform:1.0.11
 
 RUN apk --update add --no-cache openssh openssl bash curl jq zip gzip brotli \
   && git --version \
